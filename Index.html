@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المساعد الذكي</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #FFF;
+            --accent-color: #2196F3;
+            --text-color: #333;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --background: #f0f2f5;
+            --card-hover: #E8F5E9;
+            --gradient-start: #43A047;
+            --gradient-end: #2E7D32;
+        }
+
+        .dark-mode {
+            --primary-color: #81C784;
+            --secondary-color: #333;
+            --accent-color: #64B5F6;
+            --text-color: #FFF;
+            --shadow-color: rgba(255, 255, 255, 0.1);
+            --background: #1a1a1a;
+            --card-hover: #2E3B2E;
+            --gradient-start: #2E7D32;
+            --gradient-end: #1B5E20;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border-radius: 15px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(180deg);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--secondary-color);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            background: var(--card-hover);
+            border-color: var(--primary-color);
+        }
+
+        .card h2 {
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h2 i {
+            font-size: 1.5em;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--secondary-color);
+            padding: 25px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .close {
+            float: left;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .close:hover {
+            transform: rotate(90deg);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: var(--secondary-color);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: right;
+            border: 1px solid var(--primary-color);
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .report-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .report-form input, .report-form textarea {
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid var(--primary-color);
+            background: var(--secondary-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .report-form input:focus, .report-form textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: var(--gradient-end);
+            transform: translateY(-2px);
+        }
+
+        .schedule-img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .contact-info {
+            background: var(--card-hover);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .announcement {
+            background: var(--card-hover);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .status-present {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .status-absent {
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        .status-late {
+            color: #ff9800;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>المساعد الذكي</h1>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+
+        <div class="grid">
+            <div class="card" onclick="showAttendance()">
+                <h2><i class="fas fa-user-check"></i> سجل الحضور والغياب</h2>
+            </div>
+            <div class="card" onclick="showSchedule()">
+                <h2><i class="fas fa-calendar-alt"></i> جدول الحصص</h2>
+            </div>
+            <div class="card" onclick="showContacts()">
+                <h2><i class="fas fa-phone"></i> أرقام التواصل</h2>
+            </div>
+            <div class="card" onclick="showAnnouncements()">
+                <h2><i class="fas fa-bullhorn"></i> الإعلانات المهمة</h2>
+            </div>
+            <div class="card" onclick="showReportForm()">
+                <h2><i class="fas fa-exclamation-circle"></i> رفع بلاغ</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Modal -->
+    <div id="attendanceModal" class="modal">
+        <div class="modal-content fade-in">
+            <span class="close" onclick="closeModal('attendanceModal')">&times;</span>
+            <h2>سجل الحضور والغياب</h2>
+            <table>
+                <tr>
+                    <th>الاسم</th>
+                    <th>الحالة</th>
+                </tr>
+                <tr>
+                    <td>ماريا الطريقي</td>
+                    <td class="status-present">حاضرة</td>
+                </tr>
+                <tr>
+                    <td>نورة القرشي</td>
+                    <td class="status-present">حاضرة</td>
+                </tr>
+                <tr>
+                    <td>مريم الغامدي</td>
+                    <td class="status-late">متأخرة</td>
+                </tr>
+                <tr>
+                    <td>تالا الشهري</td>
+                    <td class="status-present">حاضرة</td>
+                </tr>
+                <tr>
+                    <td>مها العتيبي</td>
+                    <td class="status-absent">غائبة</td>
+                </tr>
+                <tr>
+                    <td>رزان الحربي</td>
+                    <td class="status-present">حاضرة</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Schedule Modal -->
+    <div id="scheduleModal" class="modal">
+        <div class="modal-content fade-in">
+            <span class="close" onclick="closeModal('scheduleModal')">&times;</span>
+            <h2>جدول الحصص</h2>
+            <img src="/IMG.jpeg" alt="جدول الحصص" class="schedule-img">
+        </div>
+    </div>
+
+    <!-- Contacts Modal -->
+    <div id="contactsModal" class="modal">
+        <div class="modal-content fade-in">
+            <span class="close" onclick="closeModal('contactsModal')">&times;</span>
+            <h2>أرقام التواصل</h2>
+            <table>
+                <tr>
+                    <th>القسم</th>
+                    <th>رقم الهاتف</th>
+                </tr>
+                <tr>
+                    <td>إدارة المدرسة</td>
+                    <td>0555555555</td>
+                </tr>
+                <tr>
+                    <td>المرشدة الطلابية</td>
+                    <td>0566666666</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Announcements Modal -->
+    <div id="announcementsModal" class="modal">
+        <div class="modal-content fade-in">
+            <span class="close" onclick="closeModal('announcementsModal')">&times;</span>
+            <h2>الإعلانات المهمة</h2>
+            <div class="announcement">
+                <h3>حفل تخرج طالبات مدرسة العقيق</h3>
+                <p>يوافق يوم السبت 17/5</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Form Modal -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content fade-in">
+            <span class="close" onclick="closeModal('reportModal')">&times;</span>
+            <h2>رفع بلاغ</h2>
+            <form class="report-form">
+                <input type="text" placeholder="الاسم" required>
+                <input type="email" placeholder="البريد الإلكتروني: support@alaqeeq-school.edu.sa" value="support@alaqeeq-school.edu.sa" required>
+                <input type="tel" placeholder="رقم الهاتف: 0555555555" required>
+                <textarea placeholder="تفاصيل البلاغ" rows="5" required></textarea>
+                <button type="submit" class="btn">إرسال البلاغ</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.theme-toggle i');
+            icon.classList.toggle('fa-moon');
+            icon.classList.toggle('fa-sun');
+        }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function showAttendance() {
+            showModal('attendanceModal');
+        }
+
+        function showSchedule() {
+            showModal('scheduleModal');
+        }
+
+        function showContacts() {
+            showModal('contactsModal');
+        }
+
+        function showAnnouncements() {
+            showModal('announcementsModal');
+        }
+
+        function showReportForm() {
+            showModal('reportModal');
+        }
+
+        window.onclick = function(event) {
+            const modals = document.getElementsByClassName('modal');
+            for (let modal of modals) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
